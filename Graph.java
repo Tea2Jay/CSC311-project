@@ -19,9 +19,8 @@ public class Graph {
     private void generateGraph(int n) {
         int max = (numOfVertices * (numOfVertices - 1)) / 2; // complete graph
         int min = ((numOfVertices - 1) * (numOfVertices - 2) / 2) + 1; // least number of edges to be connected graph
-        int numberOfEdges = rnd.nextInt((max - min) + 1) + min;
 
-        // initialize the graph with random points but not connected
+        // initialize the graph with random points and fully connected
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             int x1 = rnd.nextInt(16);
             int y1 = rnd.nextInt(16);
@@ -35,8 +34,7 @@ public class Graph {
                 adjacencyMatrix[j][i] = adjacencyMatrix[i][j];
             }
         }
-        // connect the vertices
-        System.out.println(numberOfEdges);
+        // delete some edges but with constrains
         int count = max;
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < adjacencyMatrix.length; j++) {
@@ -49,7 +47,7 @@ public class Graph {
             }
         }
     }
-
+    /** print the matrix n*n  */
     public void printMatrix() {
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             for (int j = 0; j < adjacencyMatrix.length; j++) {
