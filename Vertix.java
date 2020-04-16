@@ -1,10 +1,10 @@
 public class Vertix {
-    private String name;
+    private int name;
     private int x;
     private int y;
 
     /**Enter x , y coordinates */
-   public Vertix(String name,int x, int y) {
+   public Vertix(int name,int x, int y) {
         this.name = name;
         this.x = x;
         this.y = y;
@@ -28,11 +28,11 @@ public class Vertix {
     }
 
 
-    public String getName() {
+    public int getName() {
         return this.name;
     }
 
-    public void setName(String name) {
+    public void setName(int name) {
         this.name = name;
     }
 
