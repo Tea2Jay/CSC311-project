@@ -1,21 +1,21 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Graph {
     private int numOfVertices;
-    private List<ArrayList<Vertix>> adjList;
     private Edge[][] adjacencyMatrix;
-    Random rnd = new Random();
+    private Random rnd = new Random();
 
+    /**
+     * Generate random graph with the n vertices , n > 3
+     * 
+     * @param n number of vertices
+     */
     public Graph(int n) {
-        adjList = new ArrayList<ArrayList<Vertix>>();
         this.numOfVertices = n;
         adjacencyMatrix = new Edge[n][n];
         generateGraph(n);
     }
 
-    /** Generate random graph with the n vertices , n > 3 */
     private void generateGraph(int n) {
         int max = (numOfVertices * (numOfVertices - 1)) / 2; // complete graph
         int min = ((numOfVertices - 1) * (numOfVertices - 2) / 2) + 1; // least number of edges to be connected graph
@@ -47,7 +47,8 @@ public class Graph {
             }
         }
     }
-    /** print the matrix n*n  */
+
+    /** print the matrix n*n */
     public void printMatrix() {
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             for (int j = 0; j < adjacencyMatrix.length; j++) {
@@ -59,5 +60,20 @@ public class Graph {
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Apply Kruskal algorithm to the g graph and return minmum spannig tree graph
+     * 
+     * @param g connected graph
+     * @return minmum spannig tree
+     */
+    public Graph applyKruskal(Graph g) {
+        // TODO 1. create array or heap or Priorty queueueu to sort the edges
+        // TODO 2.then pick the smallest edged after that chech if picking this edge
+        // will create a cycle pick another edge
+        // TODO 3.repeat step 2
+
+        return null;
     }
 }
