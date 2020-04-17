@@ -1,9 +1,11 @@
+import java.util.PriorityQueue;
 import java.util.Random;
 
 public class Graph {
     private int numOfVertices;
     private Edge[][] adjacencyMatrix;
-    private Random rnd = new Random();
+    private Random rnd = new Random(12345);
+    private int numberOfEdges;
 
     /**
      * Generate random graph with the n vertices , n > 3
@@ -28,28 +30,40 @@ public class Graph {
             for (int j = i + 1; j < adjacencyMatrix.length; j++) {
                 int x2 = rnd.nextInt(16);
                 int y2 = rnd.nextInt(16);
-                Vertix v2 = new Vertix(i + 1, x2, y2);
+                Vertix v2 = new Vertix(j, x2, y2);
                 adjacencyMatrix[i][j] = new Edge(v1, v2);
-                ;
-                adjacencyMatrix[j][i] = adjacencyMatrix[i][j];
+                adjacencyMatrix[j][i] = new Edge(v2, v1);
             }
         }
         // delete some edges but with constrains
-        int count = max;
+        numberOfEdges = max;
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < adjacencyMatrix.length; j++) {
-                if (count <= max && count >= min)
+                if (numberOfEdges <= max && numberOfEdges > min)
                     if (rnd.nextDouble() >= 0.5) {
                         adjacencyMatrix[i][j].setExsistInGraph(false);
                         adjacencyMatrix[j][i].setExsistInGraph(false);
-                        count--;
+                        numberOfEdges--;
                     }
             }
         }
     }
 
     /** print the matrix n*n */
-    public void printMatrix() {
+    public void printMatrixW() {
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            for (int j = 0; j < adjacencyMatrix.length; j++) {
+                if (i != j)
+                    System.out.print(" " + adjacencyMatrix[i][j].getWeight() + " ");
+                else {
+                    System.out.print(" 0 ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public void printMatrixE() {
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             for (int j = 0; j < adjacencyMatrix.length; j++) {
                 if (i != j)
@@ -65,15 +79,65 @@ public class Graph {
     /**
      * Apply Kruskal algorithm to the g graph and return minmum spannig tree graph
      * 
-     * @param g connected graph
      * @return minmum spannig tree
      */
-    public Graph applyKruskal(Graph g) {
-        // TODO 1. create array or heap or Priorty queueueu to sort the edges
-        // TODO 2.then pick the smallest edged after that chech if picking this edge
-        // will create a cycle pick another edge
-        // TODO 3.repeat step 2
+    public void applyKruskal() {
+        PriorityQueue<Edge> pEdges = new PriorityQueue<Edge>(11,
+                (e1, e2) -> (int) (e1.getWeight() - e2.getWeight()) * 100);
 
-        return null;
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            for (int j = i + 1; j < adjacencyMatrix.length; j++) {
+                if (adjacencyMatrix[i][j].isExsistInGraph()) {
+                    pEdges.add(adjacencyMatrix[i][j]);
+                    adjacencyMatrix[i][j].setExsistInGraph(false);
+                    adjacencyMatrix[j][i].setExsistInGraph(false);
+                }
+            }
+        }
+
+        Edge[] tmp = new Edge[pEdges.size()];
+        int count = 0;
+        for (int i = 0; i < 2; i++) {
+            tmp[count] = pEdges.poll();
+            adjacencyMatrix[tmp[count].getv1().getName()][tmp[count].getv2().getName()].setExsistInGraph(true);
+            adjacencyMatrix[tmp[count].getv2().getName()][tmp[count].getv1().getName()].setExsistInGraph(true);
+            count++;
+        }
+        printMatrixE();
+        while (!pEdges.isEmpty()) {
+            tmp[count] = pEdges.poll();
+            if (!isAddingMakeCycle(tmp)) {
+                adjacencyMatrix[tmp[count].getv1().getName()][tmp[count].getv2().getName()].setExsistInGraph(true);
+                adjacencyMatrix[tmp[count].getv2().getName()][tmp[count].getv1().getName()].setExsistInGraph(true);
+            }
+        }
+    }
+
+    private boolean isAddingMakeCycle(Edge[] e) {
+        if (!isConnected(e))
+            return false;
+        int source = e[0].getv1().getName();
+        int destination = e[0].getv2().getName();
+        boolean flag = false;
+        for (int i = 1; i < e.length; i++) {
+
+        }
+        return false;
+    }
+
+    private boolean isConnected(Edge[] e) {
+        boolean flag = false;
+        for (int i = 0; i < e.length; i++) {
+            for (int j = i + 1; j < e.length; j++) {
+                if ((e[i].getv1().getName() != e[j].getv1().getName()
+                        || e[i].getv2().getName() != e[j].getv1().getName())
+                        && (e[i].getv1().getName() != e[j].getv1().getName()
+                                || e[i].getv2().getName() != e[i].getv2().getName())) {
+                    flag = true;
+
+                }
+            }
+        }
+        return flag;
     }
 }

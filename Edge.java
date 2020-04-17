@@ -19,7 +19,7 @@ public class Edge {
         this.exsistInGraph = true;
     }
 
-    // setters and getters 
+    // setters and getters
 
     public double getWeight() {
         this.weight = Math.round(this.weight * 100.0) / 100.0;
