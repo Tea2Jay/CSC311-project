@@ -1,11 +1,12 @@
 
 public class Main {
     public static void main(String[] args) {
-        Graph g = new Graph(7);
+        Graph g = new Graph(4);
+        // g.printMatrixW();
         // g.printMatrixE();
-        // g.printMatrixE();
-
         g.applyKruskal();
+        // g.printMatrixADJ();
+
     }
 
 }
