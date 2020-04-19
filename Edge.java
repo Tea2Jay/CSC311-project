@@ -42,4 +42,12 @@ public class Edge {
         this.exsistInGraph = exsistInGraph;
     }
 
+    public boolean equals(Edge e) {
+        if (this.v1.equals(e.v1) || this.v1.equals(e.v2)) {
+            if (this.v2.equals(e.v1) || this.v2.equals(e.v2))
+                return this.weight == e.weight;
+        }
+        return false;
+    }
+
 }

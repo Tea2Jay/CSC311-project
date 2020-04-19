@@ -3,14 +3,14 @@ public class Vertix {
     private int x;
     private int y;
 
-    /**Enter x , y coordinates */
-   public Vertix(int name,int x, int y) {
+    /** Enter x , y coordinates */
+    public Vertix(int name, int x, int y) {
         this.name = name;
         this.x = x;
         this.y = y;
     }
 
-    // setters and getters 
+    // setters and getters
     public int getX() {
         return this.x;
     }
@@ -27,7 +27,6 @@ public class Vertix {
         this.y = y;
     }
 
-
     public int getName() {
         return this.name;
     }
@@ -36,6 +35,8 @@ public class Vertix {
         this.name = name;
     }
 
-
+    public boolean equals(Vertix v) {
+        return this.name == v.name && this.x == v.x && this.y == v.y;
+    }
 
 }
