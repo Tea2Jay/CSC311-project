@@ -1,53 +1,25 @@
+class Edge implements Comparable<Edge> {
+    Vertix src;
+    Vertix dest;
+    double weight;
 
-public class Edge {
-    private Vertix v1;
-    private Vertix v2;
-    private double weight;
-    private boolean exsistInGraph;
-
-    /**
-     * Enter Vertix v1 , b to create an edge between them
-     * 
-     */
-    public Edge(Vertix v1, Vertix v2) {
-        this.v1 = v1;
-        this.v2 = v2;
-        double tmp = Math.pow(v1.getX() - v2.getX(), 2) + Math.pow(v1.getY() - v2.getY(), 2);
-        this.weight = Math.sqrt(tmp);
-        this.weight = Math.round(weight * 100.0) / 100.0;
-        // System.out.println(weight);
-        this.exsistInGraph = true;
+    Edge() {
+        src = new Vertix();
+        dest = new Vertix();
+        weight = 0;
     }
 
-    // setters and getters
-
-    public double getWeight() {
-        this.weight = Math.round(this.weight * 100.0) / 100.0;
-        return this.weight;
+    Edge(Vertix src, Vertix dest) {
+        this.src = src;
+        this.dest = dest;
+        this.weight = calcWeight();
     }
 
-    public Vertix getv1() {
-        return this.v1;
+    double calcWeight() {
+        return this.weight = Math.sqrt(Math.pow(src.x - dest.x, 2) + Math.pow(src.y - dest.y, 2));
     }
 
-    public Vertix getv2() {
-        return this.v2;
+    public int compareTo(Edge compareEdge) {
+        return (int) (this.weight * 100 - compareEdge.weight * 100);
     }
-
-    public boolean isExsistInGraph() {
-        return this.exsistInGraph;
-    }
-
-    public void setExsistInGraph(boolean exsistInGraph) {
-        this.exsistInGraph = exsistInGraph;
-    }
-
-    public boolean equals(Edge e) {
-        if (this.v1.equals(e.v1) || this.v1.equals(e.v2)) {
-            if (this.v2.equals(e.v1) || this.v2.equals(e.v2))
-                return this.weight == e.weight;
-        }
-        return false;
-    }
-
 }

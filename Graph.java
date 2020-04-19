@@ -1,246 +1,138 @@
-import java.util.PriorityQueue;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Graph {
-    private int numOfVertices;
-    private Edge[][] adjacencyMatrix;
-    private Random rnd = new Random();
-    private int numberOfEdges;
-    private int[][] mat;
+    Random rnd = new Random();
+    int numOfVertices, numberOfEdges;
+    Edge edge[];
 
-    /**
-     * Generate random graph with the n vertices , n > 3
-     * 
-     * @param n number of vertices
-     */
-    public Graph(int n) {
-        this.numOfVertices = n;
-        adjacencyMatrix = new Edge[n][n];
-        mat = new int[n][n];
-        generateGraph(n);
-    }
+    // Creates a graph with V vertices and E edges
+    Graph(int numOfVertices) {
 
-    private void generateGraph(int n) {
-        int max = (numOfVertices * (numOfVertices - 1)) / 2; // complete graph
-        int min = ((numOfVertices - 1) * (numOfVertices - 2) / 2) + 1; // least number of edges to be connected graph
+        this.numOfVertices = numOfVertices;
+        int max = (numOfVertices * (numOfVertices - 1)) / 2;
+        int min = ((numOfVertices - 1) * (numOfVertices - 2) / 2) + 1;
+        numberOfEdges = max;
+        edge = new Edge[max];
 
-        // initialize the graph with random points and fully connected
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
+        for (int i = 0; i < edge.length; i++) {
+            edge[i] = new Edge();
+        }
+        int counter = 0;
+        for (int i = 0; i < numOfVertices; i++) {
             int x1 = rnd.nextInt(16);
             int y1 = rnd.nextInt(16);
             Vertix v1 = new Vertix(i, x1, y1);
-            for (int j = i + 1; j < adjacencyMatrix.length; j++) {
+            for (int j = i + 1; j < numOfVertices; j++) {
                 int x2 = rnd.nextInt(16);
                 int y2 = rnd.nextInt(16);
                 Vertix v2 = new Vertix(j, x2, y2);
-                adjacencyMatrix[i][j] = new Edge(v1, v2);
-                adjacencyMatrix[j][i] = new Edge(v2, v1);
+                edge[counter++] = new Edge(v1, v2);
             }
+            // System.out.println(edge[i].weight);
         }
-        // delete some edges but with constrains
-        numberOfEdges = max;
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
-            for (int j = i + 1; j < adjacencyMatrix.length; j++) {
-                if (numberOfEdges <= max && numberOfEdges > min)
-                    if (rnd.nextDouble() >= 0.5) {
-                        adjacencyMatrix[i][j].setExsistInGraph(false);
-                        adjacencyMatrix[j][i].setExsistInGraph(false);
-                        numberOfEdges--;
-                    }
-            }
+        // System.out.println(edge.length);
+
+        for (int i = 0; i < numberOfEdges; i++) {
+            if (numberOfEdges <= max && numberOfEdges > min)
+                if (rnd.nextDouble() >= 0.5) {
+                    // System.out.println(edge.length);
+                    // System.out.println("i = " + i + " E= " + numberOfEdges);
+                    edge[i] = edge[--numberOfEdges];
+
+                }
         }
+        for (int j = 0; j < numberOfEdges; j++) {
+            System.out.println(edge[j].src.name + " " + edge[j].dest.name);
+        }
+
     }
 
-    /** print the matrix n*n */
-    public void printMatrixWeightExist() {
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
-            for (int j = 0; j < adjacencyMatrix.length; j++) {
-                if (i != j)
-                    System.out.print(
-                            " " + adjacencyMatrix[i][j].getWeight() + "-" + adjacencyMatrix[i][j].isExsistInGraph());
-                else {
-                    System.out.print(" 0-false ");
-                }
-            }
-            System.out.println();
-        }
-    }
+    void KruskalMST() {
+        Edge[] result = new Edge[numOfVertices]; // This will store the resultant MST
+        int e = 0; // An index variable, used for result[]
+        int i = 0; // An index variable, used for sorted edges
+        for (i = 0; i < numOfVertices; ++i)
+            result[i] = new Edge();
 
-    public void printMatrixExist() {
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
-            for (int j = 0; j < adjacencyMatrix.length; j++) {
-                if (i != j)
-                    System.out.print(" " + adjacencyMatrix[i][j].isExsistInGraph() + " ");
-                else {
-                    System.out.print(" 0 ");
-                }
-            }
-            System.out.println();
+        Edge[] sortedEdges = new Edge[numberOfEdges];
+        for (int j = 0; j < sortedEdges.length; j++) {
+            sortedEdges[j] = edge[j];
         }
-    }
-
-    public void printMatrixMAT() {
-        for (int i = 0; i < mat.length; i++) {
-            for (int j = 0; j < mat.length; j++) {
-                if (i != j)
-                    System.out.print(" " + mat[i][j] + " ");
-                else {
-                    System.out.print(" 0 ");
-                }
-            }
-            System.out.println();
-        }
-    }
-
-    /**
-     * Apply Kruskal algorithm to the g graph and return minmum spannig tree graph
-     * 
-     * @return minmum spannig tree
-     */
-    public void applyKruskal() {
-        PriorityQueue<Edge> pEdges = new PriorityQueue<Edge>(11,
-                (e1, e2) -> (int) (e1.getWeight() * 100 - e2.getWeight() * 100));
-        // printMatrixWeightExist();
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
-            for (int j = i + 1; j < adjacencyMatrix.length; j++) {
-                if (adjacencyMatrix[i][j].isExsistInGraph()) {
-                    pEdges.add(adjacencyMatrix[i][j]);
-                    adjacencyMatrix[i][j].setExsistInGraph(false);
-                    adjacencyMatrix[j][i].setExsistInGraph(false);
-                }
-            }
-        }
-        // while (!pEdges.isEmpty())
-        // System.out.println(pEdges.poll().getWeight());
-
-        Edge[] tmp = new Edge[pEdges.size()];
-        int count = 0;
-        // for (int i = 0; i < 2; i++) {
-        // tmp[count] = pEdges.poll();
-        // int v1 = tmp[count].getv1().getName();
-        // int v2 = tmp[count].getv2().getName();
-        // adjacencyMatrix[v1][v2].setExsistInGraph(true);
-        // adjacencyMatrix[v2][v1].setExsistInGraph(true);
-        // mat[v1][v2] = 1;
-        // mat[v2][v1] = 1;
-        // count++;
-        // System.out.println(v1+" added "+v2);
+        Arrays.sort(sortedEdges);
+        // for (int j = 0; j < sortedEdges.length; j++) {
+        // System.out.println(sortedEdges[j].src.name + " " + sortedEdges[j].dest.name);
         // }
-        while (!pEdges.isEmpty()) {
-            tmp[count] = pEdges.poll();
-            int v1 = tmp[count].getv1().getName();
-            int v2 = tmp[count].getv2().getName();
-            adjacencyMatrix[v1][v2].setExsistInGraph(true);
-            adjacencyMatrix[v2][v1].setExsistInGraph(true);
-            mat[v1][v2] = 1;
-            mat[v2][v1] = 1;
-            count++;
-            // System.out.println(v1 + " added " + v2);
-            if (isAddingMakeCycle(count)) {
-                adjacencyMatrix[v1][v2].setExsistInGraph(false);
-                adjacencyMatrix[v2][v1].setExsistInGraph(false);
-                mat[v1][v2] = 0;
-                mat[v2][v1] = 0;
-                count--;
-                // System.out.println(v1 + " deleted " + v2);
-                System.out.println(count);
+
+        // Allocate memory for creating V subsets
+        Subset subsets[] = new Subset[numOfVertices];
+        for (i = 0; i < numOfVertices; ++i)
+            subsets[i] = new Subset();
+
+        // Create V subsets with single elements
+        for (int v = 0; v < numOfVertices; ++v) {
+            subsets[v].parent = v;
+            subsets[v].rank = 0;
+        }
+
+        i = 0; // Index used to pick next edge
+
+        // Number of edges to be taken is equal to V-1
+        while (e < numOfVertices - 1) {
+            // Step 2: Pick the smallest edge. And increment
+            // the index for next iteration
+            Edge next_edge = new Edge();
+
+            // System.out.println("i = " + ++i + " lengh = " + sortedEdges.length + " e = "
+            // + e + " V=" + numOfVertices);
+            next_edge = sortedEdges[i++];
+
+            int x = find(subsets, next_edge.src.name);
+            int y = find(subsets, next_edge.dest.name);
+
+            // If including this edge does't cause cycle,
+            // include it in result and increment the index
+            // of result for next edge
+            // System.out.println(x + " " + y);
+            if (x != y) {
+                result[e++] = next_edge;
+                Union(subsets, x, y);
             }
+            // Else discard the next_edge
         }
-        printMatrixMAT();
-        System.out.println(count);
+
+        // print the contents of result[] to display
+        // the built MST
+        System.out.println("Following are the edges in " + "the constructed MST");
+        for (i = 0; i < e; ++i)
+            System.out.println(result[i].src.name + " -- " + result[i].dest.name + " == " + result[i].weight);
     }
 
-    private boolean isAddingMakeCycle(int count) {
-        int[][] degMat = calDegree(mat);
-        int[][] L = minusMatrix(degMat, mat);
-        // print(L);
-        int trace = getTrace(L);
-        int rank = rankOfMatrix(L);
-        System.out.println("trace = " + trace + " rank = " + rank);
-        if (trace >= 2 * (rank + 1))
-            return true;
+    int find(Subset[] subsets, int i) {
+        // find root and make root as parent of i (path compression)
+        if (subsets[i].parent != i)
+            subsets[i].parent = find(subsets, subsets[i].parent);
 
-        return false;
+        return subsets[i].parent;
     }
 
-    private int rankOfMatrix(int mat[][]) {
-        int rank = mat.length - 1;
-        for (int row = 0; row < rank; row++) {
-            if (mat[row][row] != 0) {
-                for (int col = 0; col < mat.length - 1; col++) {
-                    if (col != row) {
-                        double mult = (double) mat[col][row] / mat[row][row];
-                        for (int i = 0; i < rank; i++)
-                            mat[col][i] -= mult * mat[row][i];
-                    }
-                }
-            } else {
-                boolean reduce = true;
-                for (int i = row + 1; i < mat.length - 1; i++) {
-                    if (mat[i][row] != 0) {
-                        swap(mat, row, i, rank);
-                        reduce = false;
-                        break;
-                    }
-                }
-                if (reduce) {
-                    rank--;
-                    for (int i = 0; i < mat.length - 1; i++)
-                        mat[i][row] = mat[i][rank];
-                }
-                row--;
-            }
-        }
-        return rank;
-    }
+    void Union(Subset subsets[], int x, int y) {
+        int xroot = find(subsets, x);
+        int yroot = find(subsets, y);
 
-    private void swap(int mat[][], int row1, int row2, int col) {
-        for (int i = 0; i < col; i++) {
-            int temp = mat[row1][i];
-            mat[row1][i] = mat[row2][i];
-            mat[row2][i] = temp;
+        // Attach smaller rank tree under root of high rank tree
+        // (Union by Rank)
+        if (subsets[xroot].rank < subsets[yroot].rank)
+            subsets[xroot].parent = yroot;
+        else if (subsets[xroot].rank > subsets[yroot].rank)
+            subsets[yroot].parent = xroot;
+
+        // If ranks are same, then make one as root and increment
+        // its rank by one
+        else {
+            subsets[yroot].parent = xroot;
+            subsets[xroot].rank++;
         }
     }
 
-    private int[][] calDegree(int[][] m) {
-        int[][] t = new int[m.length][m.length];
-        for (int i = 0; i < m.length; i++) {
-            int deg = 0;
-            for (int j = 0; j < m.length; j++) {
-                if (m[i][j] != 0) {
-                    t[i][i] = ++deg;
-                }
-            }
-
-        }
-        return t;
-    }
-
-    private int[][] minusMatrix(int[][] m1, int[][] m2) {
-        int[][] result = new int[m1.length][m2.length];
-        for (int i = 0; i < result.length; i++) {
-            for (int j = 0; j < result.length; j++) {
-                result[i][j] = m1[i][j] - m2[i][j];
-            }
-        }
-
-        return result;
-    }
-
-    private int getTrace(int[][] l) {
-        int sum = 0;
-        for (int i = 0; i < l.length; i++) {
-            sum += l[i][i];
-        }
-        return sum;
-    }
-
-    private void print(int[][] m) {
-        for (int i = 0; i < m.length; i++) {
-            for (int j = 0; j < m.length; j++) {
-                System.out.print(" " + m[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
 }

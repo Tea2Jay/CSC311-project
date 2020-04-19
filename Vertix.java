@@ -1,7 +1,7 @@
 public class Vertix {
-    private int name;
-    private int x;
-    private int y;
+    int name;
+    int x;
+    int y;
 
     /** Enter x , y coordinates */
     public Vertix(int name, int x, int y) {
@@ -10,33 +10,7 @@ public class Vertix {
         this.y = y;
     }
 
-    // setters and getters
-    public int getX() {
-        return this.x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return this.y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getName() {
-        return this.name;
-    }
-
-    public void setName(int name) {
-        this.name = name;
-    }
-
-    public boolean equals(Vertix v) {
-        return this.name == v.name && this.x == v.x && this.y == v.y;
+    public Vertix() {
     }
 
 }
