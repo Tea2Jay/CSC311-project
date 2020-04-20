@@ -16,7 +16,8 @@ class Edge implements Comparable<Edge> {
     }
 
     double calcWeight() {
-        return this.weight = Math.sqrt(Math.pow(src.x - dest.x, 2) + Math.pow(src.y - dest.y, 2));
+        double tmp = Math.sqrt(Math.pow(src.x - dest.x, 2) + Math.pow(src.y - dest.y, 2));
+        return (Math.round(tmp * 100.0) / 100.0);
     }
 
     public int compareTo(Edge compareEdge) {
