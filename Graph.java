@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Graph {
-    Random rnd = new Random();
+    Random rnd = new Random(7);
     int numOfVertices, numberOfEdges;
     Edge edge[];
 
@@ -108,7 +108,127 @@ public class Graph {
 
     }
 
-    
+    void Christofides() {
+        double[][] minmumSpaningTree = KruskalMST();// MST
+        double[][] oddGraph = oddDgree(minmumSpaningTree);// oddGraph is the set of vertices with odd dgree in MST.
+        double[][] minmumPerfectWeight = MWPM(oddGraph);// Minimum Weight Perfect Matching.
+        double[][] eulerianMultigraph = Union(minmumSpaningTree, minmumPerfectWeight);
+        print(eulerianMultigraph);
+
+    }
+
+    private double[][] Union(double[][] minmumSpaningTree, double[][] minmumPerfectWeight) {
+        double[][] result = new double[numOfVertices][numOfVertices];
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result.length; j++) {
+                result[i][j] = minmumSpaningTree[i][j];
+                if (minmumPerfectWeight[i][j] == 0)
+                    result[i][j] = minmumPerfectWeight[i][j];
+
+            }
+        }
+
+        return result;
+    }
+
+    private double[][] MWPM(double[][] oddGraph) {
+        double[][] result = new double[numOfVertices][numOfVertices];
+        double[][] tmp = new double[numOfVertices][numOfVertices];
+        int[] indecies = new int[2];
+
+        for (int i = 0; i < tmp.length; i++) {
+            for (int j = 0; j < tmp.length; j++) {
+                tmp[i][j] = oddGraph[i][j];
+            }
+        }
+        // TODO Array to store all findMin but each time checks for existence
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result.length; j++) {
+                indecies = findMin(tmp);
+                if (!findVertix(result, indecies[0], indecies[1])) {
+                    System.out.println("h");
+                    result[i][j] = tmp[i][j];
+                    result[j][i] = tmp[i][j];
+                }
+            }
+        }
+        print(result);
+        System.out.println();
+        return result;
+    }
+
+    private int[] findMin(double[][] matrix) {
+        int result[] = new int[2];
+        double tmp = Double.MAX_VALUE;
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = i + 1; j < matrix.length; j++) {
+                if (matrix[i][j] < tmp && matrix[i][j] > 0) {
+                    tmp = matrix[i][j];
+                    result[0] = i;
+                    result[1] = j;
+
+                }
+            }
+        }
+        matrix[result[0]][result[1]] = Double.MAX_VALUE;
+        System.out.println(result[0] + " " + result[1]);
+
+        return result;
+    }
+
+    private boolean findVertix(double[][] result, int i, int j) {
+        // System.out.println((int) result[i][j] == 0);
+        for (int k = 0; k < result.length; k++) {
+            if ((int) result[i][k] != 0 || (int) result[j][k] != 0) {
+                System.out.println("dsajik");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private double[][] oddDgree(double[][] matrix) {
+        int[][] mat = calDegree(matrix);
+        Vertix[] vertcz = new Vertix[numOfVertices];
+        int count = 0;
+        for (int i = 0; i < numOfVertices; i++) {
+            for (int j = 0; j < edge.length; j++) {
+                if (mat[i][i] % 2 != 0)
+                    if (edge[j].src.name == i && !exist(vertcz, count, i)) {
+                        vertcz[count++] = new Vertix(edge[j].src.name, edge[j].src.x, edge[j].src.y);
+                    } else if (edge[j].dest.name == i && !exist(vertcz, count, i)) {
+                        vertcz[count++] = new Vertix(edge[j].dest.name, edge[j].dest.x, edge[j].dest.y);
+                    }
+            }
+
+        }
+        int complete = count * count - count / 2;
+        Edge[] edgz = new Edge[complete];
+        int c = 0;
+        for (int i = 0; i < count; i++) {
+            for (int j = i + 1; j < count; j++) {
+                edgz[c++] = new Edge(vertcz[i], vertcz[j]);
+            }
+        }
+
+        double[][] m = new double[numOfVertices][numOfVertices];
+        for (int i = 0; i < numOfVertices; i++) {
+            m[edgz[i].src.name][edgz[i].dest.name] = edgz[i].weight;
+            m[edgz[i].dest.name][edgz[i].src.name] = edgz[i].weight;
+        }
+        print(m);
+        System.out.println();
+        return m;
+    }
+
+    private boolean exist(Vertix[] vertcz, int count, int i) {
+        for (int j = 0; j < count; j++) {
+            if (vertcz[j].name == i)
+                return true;
+        }
+        return false;
+    }
 
     int find(Subset[] subsets, int i) {
 
@@ -126,6 +246,38 @@ public class Graph {
         else {
             subsets[y].parent = x;
             subsets[x].rank++;
+        }
+    }
+
+    private int[][] calDegree(double[][] m) {
+        int[][] t = new int[m.length][m.length];
+        for (int i = 0; i < m.length; i++) {
+            int deg = 0;
+            for (int j = 0; j < m.length; j++) {
+                if (m[i][j] != 0) {
+                    t[i][i] = ++deg;
+                }
+            }
+
+        }
+        return t;
+    }
+
+    private void print(double[][] m) {
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m.length; j++) {
+                System.out.print(" " + m[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    private void print(int[][] m) {
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m.length; j++) {
+                System.out.print(" " + m[i][j] + " ");
+            }
+            System.out.println();
         }
     }
 
