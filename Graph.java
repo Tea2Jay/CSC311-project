@@ -113,8 +113,21 @@ public class Graph {
         double[][] oddGraph = oddDgree(minmumSpaningTree);// oddGraph is the set of vertices with odd dgree in MST.
         double[][] minmumPerfectWeight = MWPM(oddGraph);// Minimum Weight Perfect Matching.
         double[][] eulerianMultigraph = Union(minmumSpaningTree, minmumPerfectWeight);
+        print(minmumSpaningTree);
+        System.out.println();
+        // print(oddGraph);
+        // System.out.println();
+        print(minmumPerfectWeight);
+        System.out.println();
         print(eulerianMultigraph);
+        Pair<Double, Integer[]> p = findTour(eulerianMultigraph);
 
+    }
+
+    private Pair<Double, Integer[]> findTour(double[][] eulerianMultigraph) {
+        double cost = 0;
+
+        return null;
     }
 
     private double[][] Union(double[][] minmumSpaningTree, double[][] minmumPerfectWeight) {
@@ -122,7 +135,7 @@ public class Graph {
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result.length; j++) {
                 result[i][j] = minmumSpaningTree[i][j];
-                if (minmumPerfectWeight[i][j] == 0)
+                if (result[i][j] == 0)
                     result[i][j] = minmumPerfectWeight[i][j];
 
             }
@@ -135,26 +148,41 @@ public class Graph {
         double[][] result = new double[numOfVertices][numOfVertices];
         double[][] tmp = new double[numOfVertices][numOfVertices];
         int[] indecies = new int[2];
-
         for (int i = 0; i < tmp.length; i++) {
             for (int j = 0; j < tmp.length; j++) {
                 tmp[i][j] = oddGraph[i][j];
             }
         }
-        // TODO Array to store all findMin but each time checks for existence
-        for (int i = 0; i < result.length; i++) {
-            for (int j = 0; j < result.length; j++) {
-                indecies = findMin(tmp);
-                if (!findVertix(result, indecies[0], indecies[1])) {
-                    System.out.println("h");
-                    result[i][j] = tmp[i][j];
-                    result[j][i] = tmp[i][j];
+        int[] kmnt = new int[numOfVertices];
+        for (int i = 0; i < kmnt.length; i++) {
+            kmnt[i] = -1;
+        }
+        int count = 0;
+        for (int i = 0; i < numOfVertices; i++) {
+            indecies = findMin(tmp);
+            if (!isExist(kmnt, indecies)) {
+                for (int j = 0; j < 2; j++) {
+                    kmnt[count++] = indecies[j];
                 }
             }
+
         }
-        print(result);
-        System.out.println();
+        for (int i = 0; i < count; i = i + 2) {
+            result[kmnt[i]][kmnt[i + 1]] = oddGraph[kmnt[i]][kmnt[i + 1]];
+            result[kmnt[i + 1]][kmnt[i]] = oddGraph[kmnt[i + 1]][kmnt[i]];
+        }
         return result;
+    }
+
+    private boolean isExist(int[] a1, int[] a2) {
+        for (int i = 0; i < a1.length; i++) {
+            for (int j = 0; j < a2.length; j++) {
+                if (a1[i] == a2[j])
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     private int[] findMin(double[][] matrix) {
@@ -167,25 +195,13 @@ public class Graph {
                     tmp = matrix[i][j];
                     result[0] = i;
                     result[1] = j;
-
                 }
             }
         }
         matrix[result[0]][result[1]] = Double.MAX_VALUE;
-        System.out.println(result[0] + " " + result[1]);
+        // System.out.println(result[0] + " " + result[1]);
 
         return result;
-    }
-
-    private boolean findVertix(double[][] result, int i, int j) {
-        // System.out.println((int) result[i][j] == 0);
-        for (int k = 0; k < result.length; k++) {
-            if ((int) result[i][k] != 0 || (int) result[j][k] != 0) {
-                System.out.println("dsajik");
-                return true;
-            }
-        }
-        return false;
     }
 
     private double[][] oddDgree(double[][] matrix) {
@@ -203,21 +219,21 @@ public class Graph {
             }
 
         }
-        int complete = count * count - count / 2;
+
+        int complete = (count * (count - 1)) / 2;
         Edge[] edgz = new Edge[complete];
         int c = 0;
+
         for (int i = 0; i < count; i++) {
             for (int j = i + 1; j < count; j++) {
                 edgz[c++] = new Edge(vertcz[i], vertcz[j]);
             }
         }
-
         double[][] m = new double[numOfVertices][numOfVertices];
-        for (int i = 0; i < numOfVertices; i++) {
+        for (int i = 0; i < edgz.length; i++) {
             m[edgz[i].src.name][edgz[i].dest.name] = edgz[i].weight;
             m[edgz[i].dest.name][edgz[i].src.name] = edgz[i].weight;
         }
-        print(m);
         System.out.println();
         return m;
     }
