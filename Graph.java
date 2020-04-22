@@ -117,13 +117,15 @@ public class Graph {
         double[][] oddGraph = oddDgree(minmumSpaningTree);// oddGraph is the set of vertices with odd dgree in MST.
         double[][] minmumPerfectWeight = MWPM(oddGraph);// Minimum Weight Perfect Matching.
         double[][] eulerianMultigraph = Union(minmumSpaningTree, minmumPerfectWeight);
+        
 
         Queue<Integer> p = findPath(eulerianMultigraph);
+        
 
     }
 
     private Queue<Integer> findPath(double[][] eulerianMultigraph) {
-        double cost = 0;
+        double cost = calCost(eulerianMultigraph);
         int countEdges = calcEdges(eulerianMultigraph);
         int i = 0;
         int j = 0;
@@ -133,13 +135,15 @@ public class Graph {
             if (eulerianMultigraph[i][j] > 0.0) {
                 eulerianMultigraph[i][j] = 0.0;
                 eulerianMultigraph[j][i] = 0.0;
-                qPath.add(i);
+                if(!qPath.contains(i))
+                    qPath.add(i);
                 countEdges--;
                 i = j;
             } else if (eulerianMultigraph[i][j] > Math.sqrt(2) * grid) {
                 eulerianMultigraph[i][j] -= Math.sqrt(2) * grid;
                 eulerianMultigraph[j][i] -= Math.sqrt(2) * grid;
-                qPath.add(i);
+                if(!qPath.contains(i))
+                    qPath.add(i);
                 countEdges--;
                 i = j;
             }
@@ -149,11 +153,46 @@ public class Graph {
         }
         print(eulerianMultigraph);
         qPath.add(0);
-        // System.out.print(qPath.poll());
-        // while (!qPath.isEmpty())
-        // System.out.print(" --> " + qPath.poll());
+        System.out.print(qPath.poll());
+        while (!qPath.isEmpty())
+        System.out.print(" --> " + qPath.poll());
+        System.out.println("\ncost = " + cost);
 
         return qPath;
+    }
+
+    double calCost(double [][] matrix){
+        double cost = 0;
+        Vertix[] vertcz = new Vertix[numOfVertices];
+        int count = 0;
+        for (int i = 0; i < numOfVertices; i++) {
+            for (int j = 0; j < edge.length; j++) {
+                    if (edge[j].src.name == i && !exist(vertcz, count, i)) {
+                        vertcz[count++] = new Vertix(edge[j].src.name, edge[j].src.x, edge[j].src.y);
+                    } else if (edge[j].dest.name == i && !exist(vertcz, count, i)) {
+                        vertcz[count++] = new Vertix(edge[j].dest.name, edge[j].dest.x, edge[j].dest.y);
+                    }
+            }
+        }
+
+        int complete = (count * (count - 1)) / 2;
+        Edge[] edgz = new Edge[complete];
+        int c = 0;
+
+        for (int i = 0; i < count; i++) {
+            for (int j = i + 1; j < count; j++) {
+                edgz[c++] = new Edge(vertcz[i], vertcz[j]);
+            }
+        }
+        
+        for (int i = 0; i < edgz.length; i++) {
+            cost += edgz[i].weight;
+            
+        }
+
+
+
+        return (Math.round(cost* 100.0) / 100.0);
     }
 
     private int calcEdges(double[][] eulerianMultigraph) {
@@ -337,6 +376,13 @@ public class Graph {
             System.out.println();
         }
         System.out.println();
+    }
+
+    void print (Edge[] edge){
+        for (int i = 0; i < edge.length; i++) {
+                System.out.println(edge[i].weight);
+        }
+
     }
 
 }
