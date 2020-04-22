@@ -1,17 +1,21 @@
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 public class Graph {
     Random rnd = new Random(7);
     int numOfVertices, numberOfEdges;
     Edge edge[];
+    int grid;
 
     // Creates a graph with V vertices and E edges
-    Graph(int numOfVertices) {
+    Graph(int numOfVertices, int grid) {
 
         this.numOfVertices = numOfVertices;
         int max = (numOfVertices * (numOfVertices - 1)) / 2;
         int min = ((numOfVertices - 1) * (numOfVertices - 2) / 2) + 1;
+        this.grid = grid;
         numberOfEdges = max;
         edge = new Edge[max];
 
@@ -20,12 +24,12 @@ public class Graph {
         }
         int counter = 0;
         for (int i = 0; i < numOfVertices; i++) {
-            int x1 = rnd.nextInt(16);
-            int y1 = rnd.nextInt(16);
+            int x1 = rnd.nextInt(grid + 1);
+            int y1 = rnd.nextInt(grid + 1);
             Vertix v1 = new Vertix(i, x1, y1);
             for (int j = i + 1; j < numOfVertices; j++) {
-                int x2 = rnd.nextInt(16);
-                int y2 = rnd.nextInt(16);
+                int x2 = rnd.nextInt(grid + 1);
+                int y2 = rnd.nextInt(grid + 1);
                 Vertix v2 = new Vertix(j, x2, y2);
                 edge[counter++] = new Edge(v1, v2);
             }
@@ -113,21 +117,55 @@ public class Graph {
         double[][] oddGraph = oddDgree(minmumSpaningTree);// oddGraph is the set of vertices with odd dgree in MST.
         double[][] minmumPerfectWeight = MWPM(oddGraph);// Minimum Weight Perfect Matching.
         double[][] eulerianMultigraph = Union(minmumSpaningTree, minmumPerfectWeight);
-        print(minmumSpaningTree);
-        System.out.println();
-        // print(oddGraph);
-        // System.out.println();
-        print(minmumPerfectWeight);
-        System.out.println();
-        print(eulerianMultigraph);
-        Pair<Double, Integer[]> p = findTour(eulerianMultigraph);
+
+        Queue<Integer> p = findPath(eulerianMultigraph);
 
     }
 
-    private Pair<Double, Integer[]> findTour(double[][] eulerianMultigraph) {
+    private Queue<Integer> findPath(double[][] eulerianMultigraph) {
         double cost = 0;
+        int countEdges = calcEdges(eulerianMultigraph);
+        int i = 0;
+        int j = 0;
+        Queue<Integer> qPath = new LinkedList<Integer>();
+        print(eulerianMultigraph);
+        while (countEdges > 0) {
+            if (eulerianMultigraph[i][j] > 0.0) {
+                eulerianMultigraph[i][j] = 0.0;
+                eulerianMultigraph[j][i] = 0.0;
+                qPath.add(i);
+                countEdges--;
+                i = j;
+            } else if (eulerianMultigraph[i][j] > Math.sqrt(2) * grid) {
+                eulerianMultigraph[i][j] -= Math.sqrt(2) * grid;
+                eulerianMultigraph[j][i] -= Math.sqrt(2) * grid;
+                qPath.add(i);
+                countEdges--;
+                i = j;
+            }
+            // System.out.println(countEdges);
+            j = ++j % numOfVertices;
 
-        return null;
+        }
+        print(eulerianMultigraph);
+        qPath.add(0);
+        // System.out.print(qPath.poll());
+        // while (!qPath.isEmpty())
+        // System.out.print(" --> " + qPath.poll());
+
+        return qPath;
+    }
+
+    private int calcEdges(double[][] eulerianMultigraph) {
+        int count = 0;
+        for (int i = 0; i < numOfVertices; i++) {
+            for (int j = 0; j < numOfVertices; j++) {
+                if (eulerianMultigraph[i][j] > 0) {
+                    count++;
+                }
+            }
+        }
+        return count / 2;
     }
 
     private double[][] Union(double[][] minmumSpaningTree, double[][] minmumPerfectWeight) {
@@ -135,8 +173,10 @@ public class Graph {
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result.length; j++) {
                 result[i][j] = minmumSpaningTree[i][j];
-                if (result[i][j] == 0)
+                if (minmumPerfectWeight[i][j] != 0 && result[i][j] == 0)
                     result[i][j] = minmumPerfectWeight[i][j];
+                else if (minmumPerfectWeight[i][j] != 0 && result[i][j] != 0)
+                    result[i][j] += Math.round(Math.sqrt(2) * grid * 100) / 100;
 
             }
         }
@@ -286,6 +326,7 @@ public class Graph {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
     private void print(int[][] m) {
@@ -295,6 +336,7 @@ public class Graph {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
 }
